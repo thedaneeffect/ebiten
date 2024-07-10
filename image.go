@@ -142,6 +142,8 @@ type DrawImageOptions struct {
 	// Filter is a type of texture filter.
 	// The default (zero) value is FilterNearest.
 	Filter Filter
+
+	Clipper func(vs []float32) bool
 }
 
 // adjustPosition converts the position in the *ebiten.Image coordinate to the *ui.Image coordinate.
@@ -248,6 +250,11 @@ func (i *Image) DrawImage(img *Image, options *DrawImageOptions) {
 	cr, cg, cb, ca = options.ColorScale.apply(cr, cg, cb, ca)
 	vs := i.ensureTmpVertices(4 * graphics.VertexFloatCount)
 	graphics.QuadVertices(vs, float32(sx0), float32(sy0), float32(sx1), float32(sy1), a, b, c, d, tx, ty, cr, cg, cb, ca)
+
+	if options.Clipper != nil && !options.Clipper(vs) {
+		return
+	}
+
 	is := graphics.QuadIndices()
 
 	srcs := [graphics.ShaderSrcImageCount]*ui.Image{img.image}
