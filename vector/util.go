@@ -37,6 +37,10 @@ func init() {
 	whiteImage.WritePixels(pix)
 }
 
+func DrawVerticesForUtil(dst *ebiten.Image, vs []ebiten.Vertex, is []uint16, clr color.Color, antialias bool) {
+	drawVerticesForUtil(dst, vs, is, clr, antialias)
+}
+
 func drawVerticesForUtil(dst *ebiten.Image, vs []ebiten.Vertex, is []uint16, clr color.Color, antialias bool) {
 	r, g, b, a := clr.RGBA()
 	for i := range vs {
@@ -78,6 +82,20 @@ func DrawFilledRect(dst *ebiten.Image, x, y, width, height float32, clr color.Co
 	vs, is := path.AppendVerticesAndIndicesForFilling(nil, nil)
 
 	drawVerticesForUtil(dst, vs, is, clr, antialias)
+}
+
+func AppendStrokeRect(vertices []ebiten.Vertex, indices []uint16, x, y, width, height float32, strokeWidth float32) ([]ebiten.Vertex, []uint16) {
+	var path Path
+	path.MoveTo(x, y)
+	path.LineTo(x, y+height)
+	path.LineTo(x+width, y+height)
+	path.LineTo(x+width, y)
+	path.Close()
+
+	strokeOp := &StrokeOptions{}
+	strokeOp.Width = strokeWidth
+	strokeOp.MiterLimit = 10
+	return path.AppendVerticesAndIndicesForStroke(vertices, indices, strokeOp)
 }
 
 // StrokeRect strokes a rectangle with the specified width and color.
