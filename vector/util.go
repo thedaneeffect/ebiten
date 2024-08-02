@@ -84,6 +84,15 @@ func DrawFilledRect(dst *ebiten.Image, x, y, width, height float32, clr color.Co
 	drawVerticesForUtil(dst, vs, is, clr, antialias)
 }
 
+func AppendFilledRect(vertices []ebiten.Vertex, indices []uint16, x, y, width, height float32) ([]ebiten.Vertex, []uint16) {
+	var path Path
+	path.MoveTo(x, y)
+	path.LineTo(x, y+height)
+	path.LineTo(x+width, y+height)
+	path.LineTo(x+width, y)
+	return path.AppendVerticesAndIndicesForFilling(vertices, indices)
+}
+
 func AppendStrokeRect(vertices []ebiten.Vertex, indices []uint16, x, y, width, height float32, strokeWidth float32) ([]ebiten.Vertex, []uint16) {
 	var path Path
 	path.MoveTo(x, y)
